@@ -1,0 +1,9 @@
+// _typography.scss
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+$font-family-sans-serif: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$headings-font-weight: 600;
+
+// Body text
+$body-bg: #F8FAFC; // Slate 50
+$body-color: #334155; // Slate 700

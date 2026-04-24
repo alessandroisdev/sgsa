@@ -1,0 +1,107 @@
+// app.scss
+
+@import 'variables/colors';
+@import 'variables/typography';
+
+// Import Bootstrap and Icons
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Custom Global Styles
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Custom Card Design
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 1.25rem 1.5rem;
+        font-weight: 600;
+    }
+}
+
+// Micro-animations for buttons
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    &:active {
+        transform: translateY(1px);
+    }
+}
+
+.btn-primary {
+    background: $gradient-primary;
+    border: none;
+    
+    &:hover {
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        transform: translateY(-1px);
+    }
+}
+
+// Sidebar styling
+.sidebar {
+    background: $gradient-dark;
+    color: white;
+    min-height: 100vh;
+    
+    .nav-link {
+        color: rgba(255,255,255,0.8);
+        border-radius: 8px;
+        margin-bottom: 0.25rem;
+        transition: all 0.2s ease;
+        
+        &:hover, &.active {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        i {
+            margin-right: 0.75rem;
+        }
+    }
+}
+
+// DataTables Customization
+table.dataTable {
+    border-collapse: collapse !important;
+    
+    th {
+        border-bottom-width: 1px;
+        color: $dark-soft;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+    }
+    
+    td {
+        vertical-align: middle;
+        color: $body-color;
+    }
+    
+    tbody tr {
+        transition: background-color 0.15s ease;
+        &:hover {
+            background-color: rgba($primary, 0.02);
+        }
+    }
+}
+
+// Custom Toast Container
+#toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1055;
+}

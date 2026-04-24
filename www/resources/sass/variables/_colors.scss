@@ -1,0 +1,25 @@
+// _colors.scss
+
+$primary: #4F46E5; // Indigo vibrant
+$primary-hover: #4338CA;
+$secondary: #10B981; // Emerald
+$dark: #1E293B; // Slate 800
+$dark-soft: #334155; // Slate 700
+$light: #F8FAFC;
+$light-soft: #F1F5F9;
+
+// Custom Gradients
+$gradient-primary: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+$gradient-dark: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+
+// Override Bootstrap default colors
+$theme-colors: (
+  "primary":    $primary,
+  "secondary":  $secondary,
+  "success":    #10B981,
+  "info":       #0EA5E9,
+  "warning":    #F59E0B,
+  "danger":     #EF4444,
+  "light":      $light,
+  "dark":       $dark
+);
