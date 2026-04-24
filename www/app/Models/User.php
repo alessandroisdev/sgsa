@@ -17,7 +17,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasUuids, SoftDeletes;
+    use HasFactory, Notifiable, HasUuids, SoftDeletes, \OwenIt\Auditing\Auditable;
 
     /**
      * Get the attributes that should be cast.
