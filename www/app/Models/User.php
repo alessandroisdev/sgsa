@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable
 {
@@ -35,5 +35,15 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function units()
+    {
+        return $this->belongsToMany(Unit::class);
+    }
+
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class);
     }
 }

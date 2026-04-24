@@ -26,6 +26,15 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
     Route::get('/dashboard/metrics', [DashboardController::class, 'metrics'])->name('dashboard.metrics');
     Route::get('/dashboard/units/{unit}/monitor', [DashboardController::class, 'unitMonitor'])->name('dashboard.unitMonitor');
 
+    Route::get('/credentials/print', [App\Http\Controllers\Admin\PrintCredentialController::class, 'index'])->name('credentials.index');
+    Route::post('/credentials/print/batch', [App\Http\Controllers\Admin\PrintCredentialController::class, 'printBatch'])->name('credentials.printBatch');
+
+    Route::match(['get', 'post'], 'users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::post('users/store', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+    Route::get('users/{user}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('users.edit');
+    Route::put('users/{user}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+    Route::delete('users/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
     Route::match(['get', 'post'], 'units', [UnitController::class, 'index'])->name('units.index');
     Route::post('units/store', [UnitController::class, 'store'])->name('units.store');
     Route::get('units/{unit}/edit', [UnitController::class, 'edit'])->name('units.edit');

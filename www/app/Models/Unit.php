@@ -17,4 +17,8 @@ class Unit extends Model implements \OwenIt\Auditing\Contracts\Auditable
         return $this->hasMany(Area::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

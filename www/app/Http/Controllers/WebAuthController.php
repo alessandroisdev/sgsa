@@ -26,6 +26,16 @@ class WebAuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            
+            // Block attendants from web admin panel
+            if ($user->role === 'attendant') {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Acesso negado. Sua conta é exclusiva para o Painel de Atendimento (Guichê).',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
             return redirect()->intended('/admin/units');
         }

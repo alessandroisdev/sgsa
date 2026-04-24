@@ -36,4 +36,9 @@ class Area extends Model implements \OwenIt\Auditing\Contracts\Auditable
     {
         return $this->belongsTo(Unit::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

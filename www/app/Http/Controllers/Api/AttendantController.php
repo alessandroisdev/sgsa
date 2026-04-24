@@ -15,11 +15,27 @@ class AttendantController extends Controller
      * 
      * Retorna a lista de guichês (Mesas de atendimento) disponíveis para o atendente logado.
      */
-    public function counters()
+    public function counters(Request $request)
     {
-        // For simplicity, returning all active counters with their areas.
-        // In a real scenario, this might be filtered by the user's unit/permissions.
-        return Counter::with(['area.unit'])->where('active', true)->get();
+        $user = $request->user();
+
+        if ($user->role === 'admin') {
+            // Admin can see everything
+            return Counter::with(['area.unit'])->where('active', true)->get();
+        }
+
+        // For attendant, load linked area IDs and unit IDs
+        $user->load(['areas', 'units']);
+        $areaIds = $user->areas->pluck('id')->toArray();
+        $unitIds = $user->units->pluck('id')->toArray();
+
+        return Counter::with(['area.unit'])
+            ->where('active', true)
+            ->whereHas('area', function($query) use ($areaIds, $unitIds) {
+                $query->whereIn('id', $areaIds)
+                      ->orWhereIn('unit_id', $unitIds);
+            })
+            ->get();
     }
 
     /**

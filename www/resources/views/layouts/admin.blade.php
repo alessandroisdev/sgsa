@@ -33,6 +33,11 @@
                     <small class="text-white-50 px-3 text-uppercase fw-bold" style="font-size: 0.75rem;">Gerenciamento</small>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.users.index') }}" class="nav-link px-3 py-2 {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i> Usuários
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.units.index') }}" class="nav-link px-3 py-2 {{ request()->routeIs('admin.units.*') ? 'active' : '' }}">
                         <i class="bi bi-building"></i> Unidades
                     </a>
@@ -68,6 +73,15 @@
                 <li class="nav-item">
                     <a href="{{ route('admin.counters.index') }}" class="nav-link px-3 py-2 {{ request()->routeIs('admin.counters.*') ? 'active' : '' }}">
                         <i class="bi bi-person-workspace"></i> Guichês
+                    </a>
+                </li>
+                
+                <h6 class="sidebar-heading px-3 mt-4 mb-2 text-uppercase fw-bold text-secondary" style="font-size: 0.75rem;">
+                    Apoio
+                </h6>
+                <li class="nav-item">
+                    <a href="{{ route('admin.credentials.index') }}" class="nav-link px-3 py-2 {{ request()->routeIs('admin.credentials.*') ? 'active' : '' }}">
+                        <i class="bi bi-printer"></i> Impressão de Credenciais
                     </a>
                 </li>
             </ul>
