@@ -1,0 +1,131 @@
+$primary: #0d6efd;
+$light: #f8f9fa;
+
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+body {
+  background-color: #e9ecef;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden; // Kiosk mode, no scrolling
+  user-select: none; // Prevent text selection on touch
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+.totem-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.totem-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  
+  h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+  }
+  p {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
+}
+
+.totem-content {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+// Touch Buttons
+.touch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.btn-touch {
+  flex: 1 1 calc(50% - 2rem);
+  min-width: 300px;
+  min-height: 200px;
+  border-radius: 20px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  border: none;
+  background-color: white;
+  color: #333;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    background-color: #f1f3f5;
+  }
+  
+  i {
+    font-size: 4rem;
+    color: $primary;
+  }
+}
+
+.btn-priority {
+  background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+  color: white;
+  i { color: white; }
+}
+
+// Ticket Print Animation
+.ticket-print-container {
+  background: white;
+  padding: 4rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  text-align: center;
+  animation: slideUp 0.5s ease-out;
+  
+  h2 {
+    font-size: 2.5rem;
+    color: #666;
+  }
+  
+  .ticket-number {
+    font-size: 8rem;
+    font-weight: 900;
+    color: #000;
+    margin: 2rem 0;
+    line-height: 1;
+  }
+  
+  .ticket-service {
+    font-size: 2rem;
+    font-weight: bold;
+    color: $primary;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
