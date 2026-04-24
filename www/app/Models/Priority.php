@@ -12,4 +12,9 @@ class Priority extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     protected $guarded = [];
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
 }

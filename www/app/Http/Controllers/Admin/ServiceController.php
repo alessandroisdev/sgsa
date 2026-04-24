@@ -28,8 +28,22 @@ class ServiceController extends Controller
     {
         $request->validate([
             'area_id' => 'required|exists:areas,id',
-            'name' => 'required|string|max:255',
-            'prefix' => 'required|string|max:5',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('services')->where(function ($query) use ($request) {
+                    return $query->where('area_id', $request->area_id);
+                })
+            ],
+            'prefix' => [
+                'required',
+                'string',
+                'max:5',
+                \Illuminate\Validation\Rule::unique('services')->where(function ($query) use ($request) {
+                    return $query->where('area_id', $request->area_id);
+                })
+            ],
             'active' => 'boolean',
         ]);
 
@@ -52,8 +66,22 @@ class ServiceController extends Controller
     {
         $request->validate([
             'area_id' => 'required|exists:areas,id',
-            'name' => 'required|string|max:255',
-            'prefix' => 'required|string|max:5',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('services')->where(function ($query) use ($request) {
+                    return $query->where('area_id', $request->area_id);
+                })->ignore($service->id)
+            ],
+            'prefix' => [
+                'required',
+                'string',
+                'max:5',
+                \Illuminate\Validation\Rule::unique('services')->where(function ($query) use ($request) {
+                    return $query->where('area_id', $request->area_id);
+                })->ignore($service->id)
+            ],
             'active' => 'boolean',
         ]);
 

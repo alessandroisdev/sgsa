@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CounterController;
 use App\Http\Controllers\Admin\TotemController;
 use App\Http\Controllers\Admin\TvController;
 use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\Artisan;
 
 use App\Http\Controllers\WebAuthController;
 

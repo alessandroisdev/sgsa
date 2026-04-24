@@ -12,4 +12,8 @@ class Totem extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     protected $guarded = [];
 
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
 }

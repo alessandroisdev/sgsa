@@ -12,4 +12,13 @@ class Service extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     protected $guarded = [];
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
 }

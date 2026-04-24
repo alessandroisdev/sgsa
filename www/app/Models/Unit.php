@@ -12,4 +12,9 @@ class Unit extends Model implements \OwenIt\Auditing\Contracts\Auditable
 
     protected $guarded = [];
 
+    public function areas()
+    {
+        return $this->hasMany(Area::class);
+    }
+
 }
