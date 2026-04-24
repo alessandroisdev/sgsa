@@ -64,8 +64,14 @@ class QueueService
                         $nextTicket->called_at = now();
                         $nextTicket->save();
 
-                        // Fire SSE Event Here (TODO)
-                        
+                        // Fire SSE Event
+                        $nextTicket->load(['service', 'priority', 'counter']);
+                        $payload = [
+                            'action' => 'call',
+                            'ticket' => $nextTicket
+                        ];
+                        Redis::publish("sgsa_area_{$counter->area_id}", json_encode($payload));
+
                         return $nextTicket;
                     }
 
@@ -183,8 +189,13 @@ class QueueService
     public function recallTicket(Ticket $ticket): void
     {
         // Emit SSE event for TVs
-        // No DB state changes required, just update timestamp for UI
-        $ticket->touch(); 
+        $ticket->touch();
+        $ticket->load(['service', 'priority', 'counter']);
+        $payload = [
+            'action' => 'call',
+            'ticket' => $ticket
+        ];
+        Redis::publish("sgsa_area_{$ticket->service->area_id}", json_encode($payload)); 
     }
 
     /**
