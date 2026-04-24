@@ -51,7 +51,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login') }}" onsubmit="document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerHTML = '<span class=\'spinner-border spinner-border-sm me-2\' role=\'status\' aria-hidden=\'true\'></span>Entrando...';">
             @csrf
             <div class="mb-3">
                 <label class="form-label fw-medium text-secondary">E-mail</label>
@@ -63,7 +63,7 @@
                 <input type="password" name="password" class="form-control form-control-lg" required placeholder="••••••••">
             </div>
 
-            <button type="submit" class="btn btn-login btn-lg w-100">Entrar</button>
+            <button type="submit" id="submitBtn" class="btn btn-login btn-lg w-100">Entrar</button>
         </form>
     </div>
 
