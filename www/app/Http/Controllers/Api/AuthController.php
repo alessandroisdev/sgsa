@@ -10,6 +10,12 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    /**
+     * Autenticar Atendente (Login)
+     *
+     * Valida as credenciais do atendente e retorna um Bearer Token gerado via Sanctum.
+     * @unauthenticated
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -32,6 +38,11 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Encerrar Sessão (Logout)
+     *
+     * Invalida o Bearer Token atual do atendente.
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

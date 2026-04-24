@@ -8,6 +8,12 @@ use App\Models\Ticket;
 
 class TvController extends Controller
 {
+    /**
+     * Obter Configuração da TV
+     *
+     * Retorna os últimos 5 atendimentos chamados na área onde a TV está instalada.
+     * O Cabeçalho `X-Device-ID` é obrigatório.
+     */
     public function config(Request $request)
     {
         $tv = $request->get('device');
