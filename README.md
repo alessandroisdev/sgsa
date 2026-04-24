@@ -71,6 +71,3 @@ A documentação viva de todos os endpoints REST está disponível no endereço:
 👉 **[http://localhost:8084/docs/api](http://localhost:8084/docs/api)**
 
 Esta página é autogerada pelo `dedoc/scramble` e sempre refletirá as rotas e regras de validação atuais do Laravel. Use-a para testar os endpoints isoladamente ou consultar os schemas de retorno.
-
----
-*Desenvolvido em parceria com Antigravity*
