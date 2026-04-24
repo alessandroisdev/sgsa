@@ -17,8 +17,8 @@ class DeviceAuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $deviceId = $request->header('X-Device-ID');
-        $deviceType = $request->header('X-Device-Type'); // 'totem' or 'tv'
+        $deviceId = $request->header('X-Device-ID') ?? $request->query('device_id');
+        $deviceType = $request->header('X-Device-Type') ?? $request->query('device_type');
 
         if (!$deviceId || !in_array($deviceType, ['totem', 'tv'])) {
             return response()->json(['error' => 'Device ID or Type missing/invalid'], 401);
