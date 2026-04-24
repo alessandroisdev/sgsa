@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\TotemController;
 use App\Http\Controllers\Admin\TvController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/docs/api');
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
