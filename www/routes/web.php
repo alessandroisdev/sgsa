@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PriorityController;
 use App\Http\Controllers\Admin\CounterController;
 use App\Http\Controllers\Admin\TotemController;
 use App\Http\Controllers\Admin\TvController;
+use App\Http\Controllers\Admin\DashboardController;
 
 use App\Http\Controllers\WebAuthController;
 
@@ -20,6 +21,10 @@ Route::post('/login', [WebAuthController::class, 'login']);
 Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 
 Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/metrics', [DashboardController::class, 'metrics'])->name('dashboard.metrics');
+    Route::get('/dashboard/units/{unit}/monitor', [DashboardController::class, 'unitMonitor'])->name('dashboard.unitMonitor');
+
     Route::match(['get', 'post'], 'units', [UnitController::class, 'index'])->name('units.index');
     Route::post('units/store', [UnitController::class, 'store'])->name('units.store');
     Route::get('units/{unit}/edit', [UnitController::class, 'edit'])->name('units.edit');

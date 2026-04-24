@@ -25,7 +25,7 @@
             
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-3 py-2">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link px-3 py-2 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
                 </li>

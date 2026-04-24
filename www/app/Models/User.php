@@ -31,4 +31,9 @@ class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditab
             'password' => 'hashed',
         ];
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }
