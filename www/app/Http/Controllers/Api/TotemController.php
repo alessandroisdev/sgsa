@@ -11,6 +11,12 @@ use App\Models\ServicePriority; // Wait, there's no ServicePriority pivot, Servi
 
 class TotemController extends Controller
 {
+    /**
+     * Obter Configuração do Totem
+     *
+     * Retorna a lista de Prioridades e Serviços disponíveis baseados na Unidade e Área na qual o Totem está instalado.
+     * O Cabeçalho `X-Device-ID` é obrigatório.
+     */
     public function config(Request $request)
     {
         $totem = $request->get('device');
@@ -32,6 +38,12 @@ class TotemController extends Controller
         ]);
     }
 
+    /**
+     * Gerar Nova Senha
+     *
+     * Cria um novo atendimento (Ticket) para o serviço e prioridade selecionados no Totem.
+     * @unauthenticated
+     */
     public function ticket(Request $request)
     {
         $request->validate([

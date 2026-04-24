@@ -11,7 +11,9 @@ use App\Services\QueueService;
 class AttendantController extends Controller
 {
     /**
-     * List available counters.
+     * Listar Guichês
+     * 
+     * Retorna a lista de guichês (Mesas de atendimento) disponíveis para o atendente logado.
      */
     public function counters()
     {
@@ -21,7 +23,9 @@ class AttendantController extends Controller
     }
 
     /**
-     * Get the current state of a counter (current active ticket and stats).
+     * Obter Estado do Guichê
+     * 
+     * Retorna a senha atual em atendimento e a quantidade de pessoas pendentes na fila daquela Área.
      */
     public function state(Request $request, Counter $counter)
     {
@@ -57,7 +61,9 @@ class AttendantController extends Controller
     }
 
     /**
-     * Recall current ticket.
+     * Rechamar Cliente
+     * 
+     * Re-emite o som e a notificação visual na TV para a senha atual.
      */
     public function recall(Request $request, Ticket $ticket)
     {
