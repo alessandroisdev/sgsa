@@ -9,11 +9,17 @@ use App\Http\Controllers\Admin\CounterController;
 use App\Http\Controllers\Admin\TotemController;
 use App\Http\Controllers\Admin\TvController;
 
+use App\Http\Controllers\WebAuthController;
+
 Route::get('/', function () {
     return redirect('/docs/api');
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::get('/login', [WebAuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [WebAuthController::class, 'login']);
+Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
+
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
     Route::match(['get', 'post'], 'units', [UnitController::class, 'index'])->name('units.index');
     Route::post('units/store', [UnitController::class, 'store'])->name('units.store');
     Route::get('units/{unit}/edit', [UnitController::class, 'edit'])->name('units.edit');
