@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { fetchConfig, generateTicket } from './services/api'
+import { SettingsScreen } from './components/SettingsScreen'
 
 interface Priority {
   id: string
@@ -24,9 +25,13 @@ function App() {
   
   const timeoutRef = useRef<number | null>(null)
 
+  const [isConfigured, setIsConfigured] = useState(!!localStorage.getItem('sgsa_device_id') && !!localStorage.getItem('sgsa_api_url'))
+  const [showSettings, setShowSettings] = useState(!isConfigured)
+
   useEffect(() => {
+    if (!isConfigured) return;
     loadConfig()
-  }, [])
+  }, [isConfigured])
 
   const loadConfig = async () => {
     try {
@@ -82,6 +87,18 @@ function App() {
     timeoutRef.current = window.setTimeout(() => {
       resetToStart()
     }, 15000) // Idle timeout back to start if user leaves
+  }
+
+  if (showSettings) {
+    return (
+      <SettingsScreen 
+        onSave={() => {
+          setIsConfigured(true)
+          setShowSettings(false)
+        }} 
+        onCancel={isConfigured ? () => setShowSettings(false) : undefined} 
+      />
+    )
   }
 
   return (
@@ -155,6 +172,15 @@ function App() {
           </div>
         )}
       </main>
+
+      {/* Settings Button */}
+      <button 
+        onClick={() => setShowSettings(true)}
+        style={{ position: 'fixed', bottom: 20, right: 20, background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', opacity: 0.3 }}
+        title="Configurações"
+      >
+        ⚙️
+      </button>
     </div>
   )
 }

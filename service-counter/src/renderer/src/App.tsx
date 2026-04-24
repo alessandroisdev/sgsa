@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { auth, attendant } from './services/api'
+import { SettingsScreen } from './components/SettingsScreen'
 
 interface User {
   id: string
@@ -37,7 +38,12 @@ function App() {
   // Polling interval
   const pollingRef = useRef<number | null>(null)
 
+  const [isConfigured, setIsConfigured] = useState(!!localStorage.getItem('sgsa_api_url'))
+  const [showSettings, setShowSettings] = useState(!isConfigured)
+
   useEffect(() => {
+    if (!isConfigured) return;
+
     const storedUser = auth.getUser()
     if (storedUser) {
       setUser(storedUser)
@@ -47,9 +53,11 @@ function App() {
 
   useEffect(() => {
     if (selectedCounter) {
+      document.title = `SGSA Guichê: ${selectedCounter.name}`
       fetchState()
       pollingRef.current = window.setInterval(fetchState, 5000)
     } else {
+      document.title = 'SGSA Guichê'
       if (pollingRef.current) clearInterval(pollingRef.current)
     }
     return () => {
@@ -116,6 +124,18 @@ function App() {
     }
   }
 
+  if (showSettings) {
+    return (
+      <SettingsScreen 
+        onSave={() => {
+          setIsConfigured(true)
+          setShowSettings(false)
+        }} 
+        onCancel={isConfigured ? () => setShowSettings(false) : undefined} 
+      />
+    )
+  }
+
   // --- RENDER LOGIN ---
   if (!user) {
     return (
@@ -134,6 +154,13 @@ function App() {
             </div>
             <button type="submit" className="btn btn-primary btn-lg w-100">Entrar</button>
           </form>
+          
+          <button 
+            className="btn btn-link w-100 mt-3 text-secondary text-decoration-none" 
+            onClick={() => setShowSettings(true)}
+          >
+            <i className="bi bi-gear me-1"></i> Configurações do Sistema
+          </button>
         </div>
       </div>
     )

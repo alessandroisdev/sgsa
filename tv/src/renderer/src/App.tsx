@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { fetchConfig, createEventSource } from './services/api'
+import { SettingsScreen } from './components/SettingsScreen'
 
 interface Ticket {
   id: string
@@ -14,6 +15,9 @@ function App() {
   const [history, setHistory] = useState<Ticket[]>([])
   const [isFlashing, setIsFlashing] = useState(false)
   const flashTimeout = useRef<number | null>(null)
+  
+  const [isConfigured, setIsConfigured] = useState(!!localStorage.getItem('sgsa_device_id') && !!localStorage.getItem('sgsa_api_url'))
+  const [showSettings, setShowSettings] = useState(!isConfigured)
 
   // Web Audio API Ding
   const playDing = () => {
@@ -36,6 +40,8 @@ function App() {
   }
 
   useEffect(() => {
+    if (!isConfigured) return;
+
     // Initial fetch to get history
     const loadConfig = async () => {
       try {
@@ -87,7 +93,19 @@ function App() {
     return () => {
       sse.close()
     }
-  }, [])
+  }, [isConfigured])
+
+  if (showSettings) {
+    return (
+      <SettingsScreen 
+        onSave={() => {
+          setIsConfigured(true)
+          setShowSettings(false)
+        }} 
+        onCancel={isConfigured ? () => setShowSettings(false) : undefined} 
+      />
+    )
+  }
 
   return (
     <div className="tv-layout">
@@ -132,6 +150,15 @@ function App() {
           )}
         </div>
       </div>
+      
+      {/* Settings Button */}
+      <button 
+        onClick={() => setShowSettings(true)}
+        style={{ position: 'fixed', bottom: 20, right: 20, background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', opacity: 0.3 }}
+        title="Configurações"
+      >
+        ⚙️
+      </button>
     </div>
   )
 }

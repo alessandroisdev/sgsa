@@ -1,10 +1,16 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8084/api/v1';
+let API_URL = localStorage.getItem('sgsa_api_url') || import.meta.env.VITE_API_URL || 'http://localhost:8084/api/v1';
 
 const api = axios.create({
   baseURL: API_URL,
 });
+
+export const updateApiConfig = (url: string) => {
+  API_URL = url;
+  localStorage.setItem('sgsa_api_url', url);
+  api.defaults.baseURL = url;
+};
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('sgsa_token');
