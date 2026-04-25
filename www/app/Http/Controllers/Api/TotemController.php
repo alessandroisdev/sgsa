@@ -52,12 +52,15 @@ class TotemController extends Controller
         ]);
 
         $totem = $request->get('device');
+        
+        $service = Service::findOrFail($request->service_id);
+        $priority = Priority::findOrFail($request->priority_id);
 
         $queueService = app(QueueService::class);
         $ticket = $queueService->generateTicket(
-            $request->service_id,
-            $request->priority_id,
-            $totem->id
+            $service,
+            $priority,
+            $totem
         );
 
         return response()->json([

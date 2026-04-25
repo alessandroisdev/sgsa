@@ -28,9 +28,11 @@ function App() {
   const [selectedCounter, setSelectedCounter] = useState<Counter | null>(null)
   
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
-  const [pendingCount, setPendingCount] = useState(0)
+  const [pendingCount, setPendingCount] = useState<number>(0)
+  
+  const [debugError, setDebugError] = useState<string>('')
 
-  // Login Form
+  // Polling intervalm
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -69,11 +71,24 @@ function App() {
     e.preventDefault()
     try {
       setError('')
+      setDebugError('')
       const data = await auth.login({ email, password })
       setUser(data.user)
       loadCounters()
-    } catch (err) {
-      setError('Credenciais inválidas')
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Erro ao conectar')
+      
+      // Capture advanced debug information
+      const debugInfo = {
+        name: err.name,
+        message: err.message,
+        code: err.code,
+        status: err.response?.status,
+        url: err.config?.url,
+        baseURL: err.config?.baseURL,
+        method: err.config?.method,
+      };
+      setDebugError(JSON.stringify(debugInfo, null, 2))
     }
   }
 
@@ -155,6 +170,13 @@ function App() {
             <button type="submit" className="btn btn-primary btn-lg w-100">Entrar</button>
           </form>
           
+          {debugError && (
+            <div className="mt-4 p-2 bg-dark text-warning rounded text-start" style={{ fontSize: '11px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+              <strong>DEBUG INFO:</strong><br />
+              {debugError}
+            </div>
+          )}
+
           <button 
             className="btn btn-link w-100 mt-3 text-secondary text-decoration-none" 
             onClick={() => setShowSettings(true)}

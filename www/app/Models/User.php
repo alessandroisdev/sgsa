@@ -11,13 +11,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements \OwenIt\Auditing\Contracts\Auditable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasUuids, SoftDeletes, \OwenIt\Auditing\Auditable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids, SoftDeletes, \OwenIt\Auditing\Auditable;
 
     /**
      * Get the attributes that should be cast.

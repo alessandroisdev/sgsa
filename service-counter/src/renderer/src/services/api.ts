@@ -1,15 +1,26 @@
 import axios from 'axios';
 
-let API_URL = localStorage.getItem('sgsa_api_url') || import.meta.env.VITE_API_URL || 'http://localhost:8084/api/v1';
+const sanitizeUrl = (url: string) => {
+  let clean = url.trim();
+  if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+    clean = 'http://' + clean;
+  }
+  // Revert any accidentally saved 127.0.0.1 back to localhost because 127.0.0.1 hangs on this Windows WSL2
+  clean = clean.replace('127.0.0.1', 'localhost');
+  return clean.replace(/\/+$/, ''); // Remove trailing slashes
+};
+
+let API_URL = sanitizeUrl(localStorage.getItem('sgsa_api_url') || import.meta.env.VITE_API_URL || 'http://localhost:8084/api/v1');
 
 const api = axios.create({
   baseURL: API_URL,
 });
 
 export const updateApiConfig = (url: string) => {
-  API_URL = url;
-  localStorage.setItem('sgsa_api_url', url);
-  api.defaults.baseURL = url;
+  const cleanUrl = sanitizeUrl(url);
+  API_URL = cleanUrl;
+  localStorage.setItem('sgsa_api_url', cleanUrl);
+  api.defaults.baseURL = cleanUrl;
 };
 
 api.interceptors.request.use((config) => {
