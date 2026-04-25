@@ -19,24 +19,64 @@ function App() {
   const [isConfigured, setIsConfigured] = useState(!!localStorage.getItem('sgsa_device_id') && !!localStorage.getItem('sgsa_api_url'))
   const [showSettings, setShowSettings] = useState(!isConfigured)
 
-  // Web Audio API Ding
+  // Elegant Airport-style Chime
   const playDing = () => {
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const oscillator = audioCtx.createOscillator()
-    const gainNode = audioCtx.createGain()
     
-    oscillator.type = 'sine'
-    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime) // A5
-    oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5) // Drop to A4
-    
-    gainNode.gain.setValueAtTime(1, audioCtx.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1)
-    
-    oscillator.connect(gainNode)
-    gainNode.connect(audioCtx.destination)
-    
-    oscillator.start()
-    oscillator.stop(audioCtx.currentTime + 1)
+    const playNote = (freq: number, startTime: number) => {
+      const oscillator = audioCtx.createOscillator()
+      const gainNode = audioCtx.createGain()
+      
+      // Soft sine wave for an elegant tone
+      oscillator.type = 'sine'
+      oscillator.frequency.value = freq
+      
+      // Envelope: Attack quickly, decay slowly
+      gainNode.gain.setValueAtTime(0, startTime)
+      gainNode.gain.linearRampToValueAtTime(0.6, startTime + 0.05)
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5)
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioCtx.destination)
+      
+      oscillator.start(startTime)
+      oscillator.stop(startTime + 1.5)
+    }
+
+    const now = audioCtx.currentTime;
+    playNote(523.25, now);       // C5
+    playNote(659.25, now + 0.25); // E5
+    playNote(783.99, now + 0.50); // G5
+  }
+
+  // Text-to-Speech Voice Synthesizer
+  const speakTicket = (ticket: Ticket) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Cancel any ongoing speech
+
+      // Format ticket to be spelled out (e.g., "A-001" -> "A 0 0 1")
+      const cleanNumber = ticket.formatted_number.replace('-', ' ');
+      const spelledNumber = cleanNumber.split('').join(' ');
+      
+      const text = `Senha, ${spelledNumber}. Dirija-se ao, ${ticket.counter.name}.`;
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 0.85; // Slightly slower for better humanization and clarity
+      utterance.pitch = 1.0;
+      
+      // Try to find a premium native voice if available in the OS/Browser
+      const voices = window.speechSynthesis.getVoices();
+      const ptVoice = voices.find(v => v.lang.includes('pt-BR') && (v.name.includes('Google') || v.name.includes('Microsoft Maria')));
+      if (ptVoice) {
+          utterance.voice = ptVoice;
+      }
+      
+      // Wait for the chime to finish before speaking
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, 1200);
+    }
   }
 
   useEffect(() => {
@@ -67,6 +107,7 @@ function App() {
           const newTicket = data.ticket as Ticket
           
           playDing()
+          speakTicket(newTicket)
           
           // Trigger CSS Flash animation
           setIsFlashing(true)
