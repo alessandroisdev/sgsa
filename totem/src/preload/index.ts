@@ -6,7 +6,8 @@ import { ipcRenderer } from 'electron'
 // Custom APIs for renderer
 const api = {
   getPrinters: () => ipcRenderer.invoke('get-printers'),
-  printTicket: (htmlContent: string, deviceName: string) => ipcRenderer.invoke('print-ticket', htmlContent, deviceName)
+  printTicket: (htmlContent: string, deviceName: string) => ipcRenderer.invoke('print-ticket', htmlContent, deviceName),
+  printTicketTcp: (ip: string, port: number, textLines: string[]) => ipcRenderer.invoke('print-ticket-tcp', ip, port, textLines)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

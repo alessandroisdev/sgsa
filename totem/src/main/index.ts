@@ -1,4 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import * as net from 'net'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -86,6 +87,62 @@ app.whenReady().then(() => {
           }
         }
       )
+    })
+  })
+
+  ipcMain.handle('print-ticket-tcp', async (event, ip: string, port: number, textLines: string[]) => {
+    return new Promise((resolve) => {
+      const client = new net.Socket()
+      
+      client.setTimeout(3000)
+
+      client.on('error', (err) => {
+        console.error('TCP Print Error:', err)
+        resolve({ success: false, reason: err.message })
+        client.destroy()
+      })
+
+      client.on('timeout', () => {
+        resolve({ success: false, reason: 'Connection Timeout' })
+        client.destroy()
+      })
+
+      client.connect(port, ip, () => {
+        // ESC/POS Commands
+        const INIT = Buffer.from([0x1B, 0x40]) // Initialize printer
+        const ALIGN_CENTER = Buffer.from([0x1B, 0x61, 0x01])
+        const ALIGN_LEFT = Buffer.from([0x1B, 0x61, 0x00])
+        const TEXT_NORMAL = Buffer.from([0x1D, 0x21, 0x00])
+        const TEXT_LARGE = Buffer.from([0x1D, 0x21, 0x11]) // Double width & height
+        const CUT = Buffer.from([0x1D, 0x56, 0x00]) // Full cut
+
+        // Convert strings to Buffer (ASCII/Latin1)
+        const toBuf = (str: string) => Buffer.from(str + '\n', 'latin1')
+
+        // Build payload
+        let payload = Buffer.concat([INIT, ALIGN_CENTER])
+        
+        // Custom formatting based on our ticket structure
+        // Line 0: Header (SGSA)
+        // Line 1: Service Name
+        // Line 2: Ticket Number (Large)
+        // Line 3: Priority
+        // Line 4: Date
+        
+        if (textLines.length > 0) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[0])])
+        if (textLines.length > 1) payload = Buffer.concat([payload, toBuf(textLines[1])])
+        if (textLines.length > 2) payload = Buffer.concat([payload, TEXT_LARGE, Buffer.from('\n', 'latin1'), toBuf(textLines[2]), Buffer.from('\n', 'latin1')])
+        if (textLines.length > 3) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[3])])
+        if (textLines.length > 4) payload = Buffer.concat([payload, toBuf(textLines[4])])
+
+        // Add padding lines and cut
+        payload = Buffer.concat([payload, Buffer.from('\n\n\n\n', 'latin1'), CUT])
+
+        client.write(payload, () => {
+          client.end()
+          resolve({ success: true })
+        })
+      })
     })
   })
 

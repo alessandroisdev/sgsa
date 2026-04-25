@@ -87,12 +87,35 @@ function App() {
       setTicketData(result.ticket)
       setStep('printing')
       
-      const printerName = localStorage.getItem('sgsa_printer')
-      if (printerName && (window as any).api && (window as any).api.printTicket) {
-        (window as any).api.printTicket(generatePrintHtml(result.ticket), printerName)
-          .then((res: any) => {
-            if (!res.success) console.error("Falha ao imprimir:", res.reason)
-          }).catch(console.error)
+      const printerMode = localStorage.getItem('sgsa_printer_mode') || 'windows'
+      
+      if (printerMode === 'tcp') {
+        const ip = localStorage.getItem('sgsa_printer_ip')
+        if (ip && (window as any).api && (window as any).api.printTicketTcp) {
+          // Remove accents to avoid Latin1/UTF8 encoding issues on raw POS printers
+          const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          
+          const lines = [
+            "SGSA - Emissao de Senha",
+            normalize(result.ticket.service?.name || "Servico"),
+            result.ticket.formatted_number || "000",
+            `Prioridade: ${normalize(result.ticket.priority?.name || 'Normal')}`,
+            new Date().toLocaleString('pt-BR')
+          ]
+          
+          ;(window as any).api.printTicketTcp(ip, 9100, lines)
+            .then((res: any) => {
+              if (!res.success) console.error("Falha ao imprimir via TCP:", res.reason)
+            }).catch(console.error)
+        }
+      } else {
+        const printerName = localStorage.getItem('sgsa_printer')
+        if (printerName && (window as any).api && (window as any).api.printTicket) {
+          ;(window as any).api.printTicket(generatePrintHtml(result.ticket), printerName)
+            .then((res: any) => {
+              if (!res.success) console.error("Falha ao imprimir:", res.reason)
+            }).catch(console.error)
+        }
       }
       
       // Auto reset after 5 seconds

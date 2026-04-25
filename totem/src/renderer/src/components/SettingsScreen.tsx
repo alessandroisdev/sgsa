@@ -9,7 +9,11 @@ interface SettingsScreenProps {
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel }) => {
   const [url, setUrl] = useState(localStorage.getItem('sgsa_api_url') || import.meta.env.VITE_API_URL || 'http://localhost:8084/api/v1');
   const [deviceId, setDeviceId] = useState(localStorage.getItem('sgsa_device_id') || import.meta.env.VITE_DEVICE_ID || '');
+  const [printerMode, setPrinterMode] = useState<'windows' | 'tcp'>(
+    (localStorage.getItem('sgsa_printer_mode') as 'windows' | 'tcp') || 'windows'
+  );
   const [printerName, setPrinterName] = useState(localStorage.getItem('sgsa_printer') || '');
+  const [printerIp, setPrinterIp] = useState(localStorage.getItem('sgsa_printer_ip') || '192.168.0.250');
   const [printers, setPrinters] = useState<any[]>([]);
 
   useEffect(() => {
@@ -31,7 +35,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
       return;
     }
     updateApiConfig(url, deviceId);
+    localStorage.setItem('sgsa_printer_mode', printerMode);
     localStorage.setItem('sgsa_printer', printerName);
+    localStorage.setItem('sgsa_printer_ip', printerIp);
     onSave();
   };
 
@@ -67,23 +73,57 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>Impressora Térmica (Senhas)</label>
-            {printers.length > 0 ? (
-              <select 
+            <label style={styles.label}>Modo de Impressão</label>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input 
+                  type="radio" 
+                  value="windows" 
+                  checked={printerMode === 'windows'} 
+                  onChange={() => setPrinterMode('windows')} 
+                />
+                Driver Windows/USB
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input 
+                  type="radio" 
+                  value="tcp" 
+                  checked={printerMode === 'tcp'} 
+                  onChange={() => setPrinterMode('tcp')} 
+                />
+                Rede Raw (TCP/IP)
+              </label>
+            </div>
+            
+            {printerMode === 'windows' && (
+              printers.length > 0 ? (
+                <select 
+                  style={styles.input} 
+                  value={printerName} 
+                  onChange={e => setPrinterName(e.target.value)}
+                  required={printerMode === 'windows'}
+                >
+                  <option value="">Selecione uma impressora...</option>
+                  {printers.map((p, idx) => (
+                    <option key={idx} value={p.name}>{p.name} {p.isDefault ? '(Padrão)' : ''}</option>
+                  ))}
+                </select>
+              ) : (
+                <div style={{ padding: '10px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '8px', fontSize: '14px' }}>
+                  Nenhuma impressora Windows detectada.
+                </div>
+              )
+            )}
+
+            {printerMode === 'tcp' && (
+              <input 
+                type="text" 
                 style={styles.input} 
-                value={printerName} 
-                onChange={e => setPrinterName(e.target.value)}
-                required
-              >
-                <option value="">Selecione uma impressora...</option>
-                {printers.map((p, idx) => (
-                  <option key={idx} value={p.name}>{p.name} {p.isDefault ? '(Padrão)' : ''}</option>
-                ))}
-              </select>
-            ) : (
-              <div style={{ padding: '10px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '8px', fontSize: '14px' }}>
-                Nenhuma impressora detectada ou rodando fora do Electron.
-              </div>
+                value={printerIp} 
+                onChange={e => setPrinterIp(e.target.value)} 
+                placeholder="IP da Impressora Ex: 192.168.0.250" 
+                required={printerMode === 'tcp'} 
+              />
             )}
           </div>
           
