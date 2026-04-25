@@ -15,6 +15,30 @@ interface Service {
 
 type Step = 'loading' | 'error' | 'priority' | 'service' | 'printing'
 
+const generatePrintHtml = (ticket: any) => {
+  return `
+    <html>
+      <head>
+        <style>
+          body { font-family: monospace; text-align: center; margin: 0; padding: 10px; width: 100%; box-sizing: border-box; }
+          h1 { font-size: 24px; margin-bottom: 5px; text-transform: uppercase; }
+          .number { font-size: 60px; font-weight: bold; margin: 10px 0; border-top: 2px dashed #000; border-bottom: 2px dashed #000; padding: 15px 0; }
+          .service { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+          .priority { font-size: 18px; text-transform: uppercase; }
+          .date { font-size: 14px; margin-top: 20px; color: #333; }
+        </style>
+      </head>
+      <body>
+        <h1>Emissão de Senha</h1>
+        <div class="service">${ticket.service?.name}</div>
+        <div class="number">${ticket.formatted_number}</div>
+        <div class="priority">Prioridade: ${ticket.priority?.name || 'Normal'}</div>
+        <div class="date">${new Date().toLocaleString('pt-BR')}</div>
+      </body>
+    </html>
+  `;
+}
+
 function App() {
   const [step, setStep] = useState<Step>('loading')
   const [priorities, setPriorities] = useState<Priority[]>([])
@@ -62,6 +86,14 @@ function App() {
       const result = await generateTicket(s.id, selectedPriority.id)
       setTicketData(result.ticket)
       setStep('printing')
+      
+      const printerName = localStorage.getItem('sgsa_printer')
+      if (printerName && (window as any).api && (window as any).api.printTicket) {
+        (window as any).api.printTicket(generatePrintHtml(result.ticket), printerName)
+          .then((res: any) => {
+            if (!res.success) console.error("Falha ao imprimir:", res.reason)
+          }).catch(console.error)
+      }
       
       // Auto reset after 5 seconds
       if (timeoutRef.current) clearTimeout(timeoutRef.current)

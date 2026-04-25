@@ -49,8 +49,45 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  // Printer IPC handlers
+  ipcMain.handle('get-printers', async (event) => {
+    return await event.sender.getPrintersAsync()
+  })
+
+  ipcMain.handle('print-ticket', async (event, htmlContent: string, deviceName: string) => {
+    // Create a hidden window for printing
+    const printWindow = new BrowserWindow({
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    })
+
+    // Load the HTML content directly using data URI
+    const encodedHtml = encodeURIComponent(htmlContent)
+    await printWindow.loadURL(`data:text/html;charset=utf-8,${encodedHtml}`)
+
+    return new Promise((resolve) => {
+      printWindow.webContents.print(
+        {
+          silent: true,
+          deviceName: deviceName,
+          color: false,
+          margins: { marginType: 'none' }
+        },
+        (success, failureReason) => {
+          printWindow.destroy()
+          if (!success) {
+            console.error('Print failed:', failureReason)
+            resolve({ success: false, reason: failureReason })
+          } else {
+            resolve({ success: true })
+          }
+        }
+      )
+    })
+  })
 
   createWindow()
 

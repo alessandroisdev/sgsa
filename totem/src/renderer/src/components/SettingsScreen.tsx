@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { updateApiConfig } from '../services/api';
 
 interface SettingsScreenProps {
@@ -9,6 +9,20 @@ interface SettingsScreenProps {
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel }) => {
   const [url, setUrl] = useState(localStorage.getItem('sgsa_api_url') || import.meta.env.VITE_API_URL || 'http://localhost:8084/api/v1');
   const [deviceId, setDeviceId] = useState(localStorage.getItem('sgsa_device_id') || import.meta.env.VITE_DEVICE_ID || '');
+  const [printerName, setPrinterName] = useState(localStorage.getItem('sgsa_printer') || '');
+  const [printers, setPrinters] = useState<any[]>([]);
+
+  useEffect(() => {
+    if ((window as any).api && (window as any).api.getPrinters) {
+      (window as any).api.getPrinters().then((list: any[]) => {
+        setPrinters(list);
+        if (!localStorage.getItem('sgsa_printer') && list.length > 0) {
+          const defaultPrinter = list.find(p => p.isDefault);
+          setPrinterName(defaultPrinter ? defaultPrinter.name : list[0].name);
+        }
+      }).catch(console.error);
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +31,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
       return;
     }
     updateApiConfig(url, deviceId);
+    localStorage.setItem('sgsa_printer', printerName);
     onSave();
   };
 
@@ -49,6 +64,27 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
               placeholder="Ex: 019dc0ed..." 
               required 
             />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Impressora Térmica (Senhas)</label>
+            {printers.length > 0 ? (
+              <select 
+                style={styles.input} 
+                value={printerName} 
+                onChange={e => setPrinterName(e.target.value)}
+                required
+              >
+                <option value="">Selecione uma impressora...</option>
+                {printers.map((p, idx) => (
+                  <option key={idx} value={p.name}>{p.name} {p.isDefault ? '(Padrão)' : ''}</option>
+                ))}
+              </select>
+            ) : (
+              <div style={{ padding: '10px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '8px', fontSize: '14px' }}>
+                Nenhuma impressora detectada ou rodando fora do Electron.
+              </div>
+            )}
           </div>
           
           <div style={styles.buttonGroup}>
