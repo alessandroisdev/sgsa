@@ -66,6 +66,7 @@ const generatePrintHtml = (ticket: any, paperSize: string, totemName: string, un
           .totem-info {
             font-size: ${is58mm ? '10px' : '12px'};
             margin-top: 5px;
+            margin-bottom: 20px;
             color: #555;
           }
         </style>

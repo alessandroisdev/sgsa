@@ -17,6 +17,9 @@ O ecossistema é formado por 4 componentes principais:
 2.  **Terminal Totem (`./totem`)**:
     *   Aplicativo **Electron + React** para telas *Touchscreen*.
     *   Fluxo de autoatendimento à prova de idiotas: Escolha Prioridade > Escolha Serviço > Receba a senha impressa.
+    *   **Módulo de Impressão Duplo**: 
+        *   Suporte a impressão nativa silenciosa via *Driver do Windows* (Spooler).
+        *   Suporte a comunicação *Raw Socket TCP/IP* para envio de comandos puros **ESC/POS** diretos para a porta 9100 da impressora de rede (com corte de guilhotina e adaptação inteligente para bobinas de 58mm ou 80mm).
     *   Reset automático por inatividade (Kiosk Mode).
 3.  **Terminal TV (`./tv`)**:
     *   Aplicativo **Electron + React** projetado para as salas de espera.
