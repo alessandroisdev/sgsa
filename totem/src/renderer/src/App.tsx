@@ -15,17 +15,48 @@ interface Service {
 
 type Step = 'loading' | 'error' | 'priority' | 'service' | 'printing'
 
-const generatePrintHtml = (ticket: any) => {
+const generatePrintHtml = (ticket: any, paperSize: string) => {
+  const is58mm = paperSize === '58mm';
+  
   return `
     <html>
       <head>
         <style>
-          body { font-family: monospace; text-align: center; margin: 0; padding: 10px; width: 100%; box-sizing: border-box; }
-          h1 { font-size: 24px; margin-bottom: 5px; text-transform: uppercase; }
-          .number { font-size: 60px; font-weight: bold; margin: 10px 0; border-top: 2px dashed #000; border-bottom: 2px dashed #000; padding: 15px 0; }
-          .service { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-          .priority { font-size: 18px; text-transform: uppercase; }
-          .date { font-size: 14px; margin-top: 20px; color: #333; }
+          body { 
+            font-family: monospace; 
+            text-align: center; 
+            margin: 0; 
+            padding: ${is58mm ? '5px' : '10px'}; 
+            width: ${is58mm ? '180px' : '280px'}; 
+            box-sizing: border-box; 
+          }
+          h1 { 
+            font-size: ${is58mm ? '16px' : '24px'}; 
+            margin-bottom: 5px; 
+            text-transform: uppercase; 
+          }
+          .number { 
+            font-size: ${is58mm ? '40px' : '60px'}; 
+            font-weight: bold; 
+            margin: ${is58mm ? '5px' : '10px'} 0; 
+            border-top: 2px dashed #000; 
+            border-bottom: 2px dashed #000; 
+            padding: ${is58mm ? '5px' : '15px'} 0; 
+          }
+          .service { 
+            font-size: ${is58mm ? '14px' : '20px'}; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+          }
+          .priority { 
+            font-size: ${is58mm ? '12px' : '18px'}; 
+            text-transform: uppercase; 
+          }
+          .date { 
+            font-size: ${is58mm ? '10px' : '14px'}; 
+            margin-top: ${is58mm ? '10px' : '20px'}; 
+            color: #333; 
+          }
         </style>
       </head>
       <body>
@@ -88,11 +119,11 @@ function App() {
       setStep('printing')
       
       const printerMode = localStorage.getItem('sgsa_printer_mode') || 'windows'
+      const paperSize = localStorage.getItem('sgsa_printer_paper') || '80mm'
       
       if (printerMode === 'tcp') {
         const ip = localStorage.getItem('sgsa_printer_ip')
         if (ip && (window as any).api && (window as any).api.printTicketTcp) {
-          // Remove accents to avoid Latin1/UTF8 encoding issues on raw POS printers
           const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
           
           const lines = [
@@ -103,7 +134,7 @@ function App() {
             new Date().toLocaleString('pt-BR')
           ]
           
-          ;(window as any).api.printTicketTcp(ip, 9100, lines)
+          ;(window as any).api.printTicketTcp(ip, 9100, lines, paperSize)
             .then((res: any) => {
               if (!res.success) console.error("Falha ao imprimir via TCP:", res.reason)
             }).catch(console.error)
@@ -111,7 +142,7 @@ function App() {
       } else {
         const printerName = localStorage.getItem('sgsa_printer')
         if (printerName && (window as any).api && (window as any).api.printTicket) {
-          ;(window as any).api.printTicket(generatePrintHtml(result.ticket), printerName)
+          ;(window as any).api.printTicket(generatePrintHtml(result.ticket, paperSize), printerName)
             .then((res: any) => {
               if (!res.success) console.error("Falha ao imprimir:", res.reason)
             }).catch(console.error)

@@ -12,6 +12,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
   const [printerMode, setPrinterMode] = useState<'windows' | 'tcp'>(
     (localStorage.getItem('sgsa_printer_mode') as 'windows' | 'tcp') || 'windows'
   );
+  const [printerPaper, setPrinterPaper] = useState<'80mm' | '58mm'>(
+    (localStorage.getItem('sgsa_printer_paper') as '80mm' | '58mm') || '80mm'
+  );
   const [printerName, setPrinterName] = useState(localStorage.getItem('sgsa_printer') || '');
   const [printerIp, setPrinterIp] = useState(localStorage.getItem('sgsa_printer_ip') || '192.168.0.250');
   const [printers, setPrinters] = useState<any[]>([]);
@@ -36,6 +39,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
     }
     updateApiConfig(url, deviceId);
     localStorage.setItem('sgsa_printer_mode', printerMode);
+    localStorage.setItem('sgsa_printer_paper', printerPaper);
     localStorage.setItem('sgsa_printer', printerName);
     localStorage.setItem('sgsa_printer_ip', printerIp);
     onSave();
@@ -125,6 +129,30 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onSave, onCancel
                 required={printerMode === 'tcp'} 
               />
             )}
+            
+            <div style={{ marginTop: '15px' }}>
+              <label style={styles.label}>Tamanho do Papel (Bobina)</label>
+              <div style={{ display: 'flex', gap: '20px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input 
+                    type="radio" 
+                    value="80mm" 
+                    checked={printerPaper === '80mm'} 
+                    onChange={() => setPrinterPaper('80mm')} 
+                  />
+                  80mm (Padrão)
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input 
+                    type="radio" 
+                    value="58mm" 
+                    checked={printerPaper === '58mm'} 
+                    onChange={() => setPrinterPaper('58mm')} 
+                  />
+                  58mm (Estreita)
+                </label>
+              </div>
+            </div>
           </div>
           
           <div style={styles.buttonGroup}>

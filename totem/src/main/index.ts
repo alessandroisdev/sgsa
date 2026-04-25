@@ -90,7 +90,7 @@ app.whenReady().then(() => {
     })
   })
 
-  ipcMain.handle('print-ticket-tcp', async (event, ip: string, port: number, textLines: string[]) => {
+  ipcMain.handle('print-ticket-tcp', async (event, ip: string, port: number, textLines: string[], paperSize: string) => {
     return new Promise((resolve) => {
       const client = new net.Socket()
       
@@ -111,9 +111,12 @@ app.whenReady().then(() => {
         // ESC/POS Commands
         const INIT = Buffer.from([0x1B, 0x40]) // Initialize printer
         const ALIGN_CENTER = Buffer.from([0x1B, 0x61, 0x01])
-        const ALIGN_LEFT = Buffer.from([0x1B, 0x61, 0x00])
         const TEXT_NORMAL = Buffer.from([0x1D, 0x21, 0x00])
-        const TEXT_LARGE = Buffer.from([0x1D, 0x21, 0x11]) // Double width & height
+        
+        // If 58mm, double width might be too big for 4-digit tickets, so use double height for tickets and normal for others
+        const TEXT_LARGE = paperSize === '58mm' ? Buffer.from([0x1D, 0x21, 0x11]) : Buffer.from([0x1D, 0x21, 0x22]); // Double vs Quad
+        const TEXT_MEDIUM = paperSize === '58mm' ? Buffer.from([0x1D, 0x21, 0x00]) : Buffer.from([0x1D, 0x21, 0x11]); // Normal vs Double
+        
         const CUT = Buffer.from([0x1D, 0x56, 0x00]) // Full cut
 
         // Convert strings to Buffer (ASCII/Latin1)
@@ -130,7 +133,7 @@ app.whenReady().then(() => {
         // Line 4: Date
         
         if (textLines.length > 0) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[0])])
-        if (textLines.length > 1) payload = Buffer.concat([payload, toBuf(textLines[1])])
+        if (textLines.length > 1) payload = Buffer.concat([payload, TEXT_MEDIUM, toBuf(textLines[1])])
         if (textLines.length > 2) payload = Buffer.concat([payload, TEXT_LARGE, Buffer.from('\n', 'latin1'), toBuf(textLines[2]), Buffer.from('\n', 'latin1')])
         if (textLines.length > 3) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[3])])
         if (textLines.length > 4) payload = Buffer.concat([payload, toBuf(textLines[4])])
