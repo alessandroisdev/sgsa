@@ -22,6 +22,8 @@ class TotemController extends Controller
         $totem = $request->get('device');
         $areaId = $request->get('area_id');
 
+        $totem->load('area.unit');
+
         $services = Service::where('area_id', $areaId)
                            ->where('active', true)
                            ->orderBy('name')
@@ -62,6 +64,8 @@ class TotemController extends Controller
             $priority,
             $totem
         );
+
+        $ticket->load(['service', 'priority']);
 
         return response()->json([
             'message' => 'Ticket generated successfully',

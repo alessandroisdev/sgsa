@@ -127,16 +127,20 @@ app.whenReady().then(() => {
         
         // Custom formatting based on our ticket structure
         // Line 0: Header (SGSA)
-        // Line 1: Service Name
-        // Line 2: Ticket Number (Large)
-        // Line 3: Priority
-        // Line 4: Date
+        // Line 1: Unit Name
+        // Line 2: Service Name
+        // Line 3: Ticket Number (Large)
+        // Line 4: Priority
+        // Line 5: Date
+        // Line 6: Terminal
         
         if (textLines.length > 0) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[0])])
         if (textLines.length > 1) payload = Buffer.concat([payload, TEXT_MEDIUM, toBuf(textLines[1])])
-        if (textLines.length > 2) payload = Buffer.concat([payload, TEXT_LARGE, Buffer.from('\n', 'latin1'), toBuf(textLines[2]), Buffer.from('\n', 'latin1')])
-        if (textLines.length > 3) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[3])])
-        if (textLines.length > 4) payload = Buffer.concat([payload, toBuf(textLines[4])])
+        if (textLines.length > 2) payload = Buffer.concat([payload, TEXT_MEDIUM, toBuf(textLines[2])])
+        if (textLines.length > 3) payload = Buffer.concat([payload, TEXT_LARGE, Buffer.from('\n', 'latin1'), toBuf(textLines[3]), Buffer.from('\n', 'latin1')])
+        if (textLines.length > 4) payload = Buffer.concat([payload, TEXT_NORMAL, toBuf(textLines[4])])
+        if (textLines.length > 5) payload = Buffer.concat([payload, toBuf(textLines[5])])
+        if (textLines.length > 6) payload = Buffer.concat([payload, toBuf(textLines[6])])
 
         // Add padding lines and cut
         payload = Buffer.concat([payload, Buffer.from('\n\n\n\n', 'latin1'), CUT])

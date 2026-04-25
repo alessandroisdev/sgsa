@@ -15,7 +15,7 @@ interface Service {
 
 type Step = 'loading' | 'error' | 'priority' | 'service' | 'printing'
 
-const generatePrintHtml = (ticket: any, paperSize: string) => {
+const generatePrintHtml = (ticket: any, paperSize: string, totemName: string, unitName: string) => {
   const is58mm = paperSize === '58mm';
   
   return `
@@ -36,17 +36,23 @@ const generatePrintHtml = (ticket: any, paperSize: string) => {
             text-transform: uppercase; 
           }
           .number { 
-            font-size: ${is58mm ? '40px' : '60px'}; 
+            font-size: ${is58mm ? '32px' : '46px'}; 
             font-weight: bold; 
             margin: ${is58mm ? '5px' : '10px'} 0; 
             border-top: 2px dashed #000; 
             border-bottom: 2px dashed #000; 
             padding: ${is58mm ? '5px' : '15px'} 0; 
+            word-wrap: break-word;
           }
           .service { 
             font-size: ${is58mm ? '14px' : '20px'}; 
             font-weight: bold; 
             margin-bottom: 5px; 
+          }
+          .unit {
+            font-size: ${is58mm ? '12px' : '16px'};
+            margin-bottom: 10px;
+            text-transform: uppercase;
           }
           .priority { 
             font-size: ${is58mm ? '12px' : '18px'}; 
@@ -57,14 +63,21 @@ const generatePrintHtml = (ticket: any, paperSize: string) => {
             margin-top: ${is58mm ? '10px' : '20px'}; 
             color: #333; 
           }
+          .totem-info {
+            font-size: ${is58mm ? '10px' : '12px'};
+            margin-top: 5px;
+            color: #555;
+          }
         </style>
       </head>
       <body>
-        <h1>Emissão de Senha</h1>
-        <div class="service">${ticket.service?.name}</div>
-        <div class="number">${ticket.formatted_number}</div>
+        <h1>SGSA</h1>
+        <div class="unit">${unitName}</div>
+        <div class="service">${ticket.service?.name || ''}</div>
+        <div class="number">${ticket.formatted_number || ''}</div>
         <div class="priority">Prioridade: ${ticket.priority?.name || 'Normal'}</div>
         <div class="date">${new Date().toLocaleString('pt-BR')}</div>
+        <div class="totem-info">Terminal: ${totemName}</div>
       </body>
     </html>
   `;
@@ -74,6 +87,9 @@ function App() {
   const [step, setStep] = useState<Step>('loading')
   const [priorities, setPriorities] = useState<Priority[]>([])
   const [services, setServices] = useState<Service[]>([])
+  
+  const [totemName, setTotemName] = useState<string>('')
+  const [unitName, setUnitName] = useState<string>('')
   
   const [selectedPriority, setSelectedPriority] = useState<Priority | null>(null)
   const [ticketData, setTicketData] = useState<any>(null)
@@ -94,6 +110,8 @@ function App() {
       const data = await fetchConfig()
       setPriorities(data.priorities)
       setServices(data.services)
+      setTotemName(data.totem?.device_identifier || data.totem?.name || 'Totem')
+      setUnitName(data.totem?.area?.unit?.name || 'Unidade')
       setStep('priority')
     } catch (err) {
       console.error(err)
@@ -127,11 +145,13 @@ function App() {
           const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
           
           const lines = [
-            "SGSA - Emissao de Senha",
+            "SGSA",
+            normalize(unitName),
             normalize(result.ticket.service?.name || "Servico"),
             result.ticket.formatted_number || "000",
             `Prioridade: ${normalize(result.ticket.priority?.name || 'Normal')}`,
-            new Date().toLocaleString('pt-BR')
+            new Date().toLocaleString('pt-BR'),
+            `Terminal: ${normalize(totemName)}`
           ]
           
           ;(window as any).api.printTicketTcp(ip, 9100, lines, paperSize)
@@ -142,7 +162,7 @@ function App() {
       } else {
         const printerName = localStorage.getItem('sgsa_printer')
         if (printerName && (window as any).api && (window as any).api.printTicket) {
-          ;(window as any).api.printTicket(generatePrintHtml(result.ticket, paperSize), printerName)
+          ;(window as any).api.printTicket(generatePrintHtml(result.ticket, paperSize, totemName, unitName), printerName)
             .then((res: any) => {
               if (!res.success) console.error("Falha ao imprimir:", res.reason)
             }).catch(console.error)
