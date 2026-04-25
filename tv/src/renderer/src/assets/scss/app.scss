@@ -114,3 +114,50 @@ body {
 .flash-active {
   animation: flashAlert 0.5s ease-in-out 3;
 }
+
+// Responsive TV Adjustments for smaller monitors/resolutions
+@media (max-width: 1200px) {
+  .tv-main {
+    .ticket-number { font-size: 10rem; letter-spacing: -2px; }
+    .ticket-counter { font-size: 3rem; }
+    .ticket-priority { font-size: 1.5rem; padding: 5px 10px; top: 20px; left: 20px; }
+  }
+  .tv-history {
+    .history-header h2 { font-size: 1.5rem; }
+    .history-item .h-number { font-size: 2.5rem; }
+    .history-item .h-counter { font-size: 1.2rem; }
+  }
+}
+
+@media (max-width: 768px) {
+  .tv-layout {
+    flex-direction: column;
+  }
+  .tv-main {
+    flex: 2;
+    .ticket-number { font-size: 6rem; margin-bottom: 1rem; }
+    .ticket-counter { font-size: 2rem; }
+  }
+  .tv-history {
+    flex: 1;
+    border-left: none;
+    border-top: 2px solid #333;
+    .history-list {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .history-header {
+      padding: 1rem;
+      h2 { font-size: 1.2rem; }
+    }
+    .history-item {
+      padding: 1rem;
+      flex: 0 0 auto;
+      .h-number { font-size: 2rem; }
+      .h-counter { font-size: 1rem; }
+    }
+  }
+}

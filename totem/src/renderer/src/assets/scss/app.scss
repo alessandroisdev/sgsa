@@ -43,29 +43,37 @@ body {
 
 .totem-content {
   flex: 1;
-  padding: 3rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  height: 100%;
+
+  h2 {
+    margin-bottom: 2rem !important;
+    font-size: 2rem;
+  }
 }
 
 // Touch Buttons
 .touch-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-auto-rows: 1fr; // Make all buttons take equal height
+  gap: 1.5rem;
   width: 100%;
+  flex: 1; // Take remaining height
+  min-height: 0; // Prevent flex overflow
 }
 
 .btn-touch {
-  flex: 1 1 calc(50% - 2rem);
-  min-width: 300px;
-  min-height: 200px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   border-radius: 20px;
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
   border: none;
   background-color: white;
@@ -77,6 +85,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  padding: 1rem;
+  text-align: center;
+  line-height: 1.2;
+  word-wrap: break-word;
   
   &:active {
     transform: scale(0.95);
@@ -85,8 +97,9 @@ body {
   }
   
   i {
-    font-size: 4rem;
+    font-size: 3rem;
     color: $primary;
+    margin-bottom: 0.5rem;
   }
 }
 
@@ -128,4 +141,48 @@ body {
 @keyframes slideUp {
   from { transform: translateY(100px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .btn-touch { font-size: 1.5rem; i { font-size: 2.5rem; } }
+}
+
+@media (max-width: 768px) {
+  .totem-header {
+    padding: 1rem;
+    h1 { font-size: 1.8rem; }
+    p { font-size: 1.1rem; }
+  }
+
+  .totem-content {
+    padding: 1rem;
+    h2 { margin-bottom: 1rem !important; font-size: 1.5rem; }
+  }
+
+  .touch-grid {
+    grid-template-columns: 1fr 1fr; // Always 2 columns on small screens
+    gap: 1rem;
+  }
+
+  .btn-touch {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    gap: 0.5rem;
+    i { font-size: 2rem; margin-bottom: 0; }
+  }
+
+  .ticket-print-container {
+    padding: 1.5rem;
+    h2 { font-size: 1.5rem; }
+    .ticket-number { font-size: 4rem; margin: 1rem 0; }
+    .ticket-service { font-size: 1.2rem; }
+    p { font-size: 1rem !important; }
+  }
+}
+
+@media (max-width: 480px) {
+  .touch-grid {
+    grid-template-columns: 1fr; // 1 column on very small screens
+  }
 }
